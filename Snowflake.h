@@ -17,6 +17,7 @@ class Snowflake
 public:
 	static USHORT max_row;		// высота экрана (задаетс€ объектом Landscape при объ€влении)
 	static float speed_base;	// базова€ константа дл€ расчета скорости
+	static std::mutex mtx;			// общий мютекс дл€ всех снежинок
 
 	// Constructor
 	Snowflake(USHORT row, USHORT col, float speed) {
@@ -32,21 +33,26 @@ public:
 	
 	// Draw snowflake on the screen
 	void draw() {
+		mtx.lock();
 		// Set cursor position
 		std::cout << "\x1b[" << row << ";" << col << "H";
 		// Set color
 		std::cout << "\x1b[38;2;" << (short)melt << ";" << (short)melt << ";" << (short)melt << "m";
 		// Print star
 		std::cout << '*';
+		mtx.unlock();
+
 	}
 
 
 	// Hide snowflake from screen
 	void erase() {
+		mtx.lock();
 		// Set cursor position
 		std::cout << "\x1b[" << row << ";" << col << "H";
 		// Print space
 		std::cout << ' ';
+		mtx.unlock();
 	}
 
 
@@ -56,7 +62,7 @@ public:
 			erase();
 			row++;
 			draw();
-			std::this_thread::sleep_for(std::chrono::milliseconds(int(speed_base/speed)));
+			std::this_thread::sleep_for(std::chrono::milliseconds(int(speed_base / speed)));
 		}
 	}
 
@@ -64,3 +70,4 @@ public:
 
 USHORT Snowflake::max_row = 0;
 float Snowflake::speed_base = 20;
+std::mutex Snowflake::mtx;

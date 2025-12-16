@@ -2,13 +2,13 @@
 //
 
 #include <iostream>
+#include <thread>
 #include "Landscape.h"
 
 
 int main()
 {
     Landscape screen;
-    Snowflake flake(4, 5, 0.02);
-    flake.fall();
+    screen.run_snowfall(200, 44);
+   
 }
-
